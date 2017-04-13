@@ -67,7 +67,16 @@ export function Apps(optionHash) {
   }
 
   //
-  // build filter to only get matching registry elements
+  // build filters to only get matching registry elements
+  // Two filters are created:
+  // #1. filter: used to query Packages collection
+  // sample filter: {
+  //     "registry.provides": "ui-search",
+  //     "shopId": "J8Bhq3uTtdgwZx3rz"
+  // }
+  // #2. registryFilter: {
+  //     "provides": "ui-search",
+  // }
   //
   for (key in options) {
     if ({}.hasOwnProperty.call(options, key)) {
@@ -89,15 +98,32 @@ export function Apps(optionHash) {
     }
   }
 
+  console.log(JSON.stringify({ filter }, null, 4));
+  console.log(JSON.stringify({ registryFilter }, null, 4));
+
   // fetch the packages
-  Packages.find(filter).forEach((app) => {
+  Packages.find({}).forEach((app) => {
     const matchingRegistry = _.filter(app.registry, function (item) {
       const itemFilter = registryFilter;
 
-      // check audience permissions only if they exist as part of optionHash and are part of the registry item
+      // check audience permissions ONLY if they exist as part of optionHash (isMatch) and are part of the registry item
       // ideally all routes should use it, safe for backwards compatibility though
-      // owner bypasses permissions
+      // owner bypasses permissions (via the first Reaction.hasOwnerAccess() check)
       if (!Reaction.hasOwnerAccess() && item.audience && registryFilter.audience) {
+        /**
+         * sample Package.registry.audience
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         */
+
         let hasAccess;
 
         for (const permission of registryFilter.audience) {
@@ -128,8 +154,8 @@ export function Apps(optionHash) {
 
   // Sort apps by priority (registry.priority)
   const sortedApps = reactionApps.sort((a, b) => a.priority - b.priority).slice();
-
-  return sortedApps;
+  console.log(JSON.stringify({ sortedApps }, null, 4));
+  return [sortedApps[0]];
 }
 
 // Register global template helper

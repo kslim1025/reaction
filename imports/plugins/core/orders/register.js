@@ -17,6 +17,7 @@ Reaction.registerPackage({
     description: "Fulfill your orders",
     icon: "fa fa-sun-o",
     priority: 0,
+    audience: ["dashboard/orders"],
     container: "core",
     template: "orders"
   }, {
