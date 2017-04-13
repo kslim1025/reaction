@@ -66,16 +66,16 @@ export function Apps(optionHash) {
     options.shopId = Reaction.getShopId();
   }
 
-  //
-  // build filters to only get matching registry elements
+  // build filters to only get matching registry elements (formed from optionsHash)
   // Two filters are created:
   // #1. filter: used to query Packages collection
   // sample filter: {
-  //     "registry.provides": "ui-search",
-  //     "shopId": "J8Bhq3uTtdgwZx3rz"
+  //     "registry.provides": "shortcut",
+  //     "enabled": true,
+  //     "shopId": "xxxxxxxx"
   // }
   // #2. registryFilter: {
-  //     "provides": "ui-search",
+  //     "provides": "shortcut",
   // }
   //
   for (key in options) {
@@ -83,6 +83,7 @@ export function Apps(optionHash) {
       const value = options[key];
       if (value) {
         if (!(key === "enabled" || key === "name" || key === "shopId")) {
+          // creates "registry.xxxx" field in the filter except for these 3 keys
           filter["registry." + key] = Array.isArray(options[key]) ? { $in: value } : value;
           registryFilter[key] = value;
         } else {
@@ -98,8 +99,8 @@ export function Apps(optionHash) {
     }
   }
 
-  console.log(JSON.stringify({ filter }, null, 4));
-  console.log(JSON.stringify({ registryFilter }, null, 4));
+  // console.log(JSON.stringify({ filter }, null, 4));
+  // console.log(JSON.stringify({ registryFilter }, null, 4));
 
   // fetch the packages
   Packages.find({}).forEach((app) => {
@@ -154,8 +155,8 @@ export function Apps(optionHash) {
 
   // Sort apps by priority (registry.priority)
   const sortedApps = reactionApps.sort((a, b) => a.priority - b.priority).slice();
-  console.log(JSON.stringify({ sortedApps }, null, 4));
-  return [sortedApps[0]];
+  // console.log(JSON.stringify({ sortedApps }, null, 4));
+  return sortedApps;
 }
 
 // Register global template helper

@@ -17,6 +17,7 @@ Reaction.registerPackage({
     icon: "fa fa-th",
     priority: 0,
     container: "core",
+    audience: ["dashboard"],
     permissions: [{
       label: "Dashboard",
       permission: "dashboard"
