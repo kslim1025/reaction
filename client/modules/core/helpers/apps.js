@@ -69,8 +69,9 @@ export function Apps(optionHash) {
   // build filters to only get matching registry elements (formed from optionsHash)
   // Two filters are created:
   // #1. filter: used to query Packages collection
-  // sample filter: {
+  // sample {
   //     "registry.provides": "shortcut",
+  //     "registry.audience": { $in: ["dashboard"] },
   //     "enabled": true,
   //     "shopId": "xxxxxxxx"
   // }
@@ -99,11 +100,8 @@ export function Apps(optionHash) {
     }
   }
 
-  // console.log(JSON.stringify({ filter }, null, 4));
-  // console.log(JSON.stringify({ registryFilter }, null, 4));
-
   // fetch the packages
-  Packages.find({}).forEach((app) => {
+  Packages.find(filter).forEach((app) => {
     const matchingRegistry = _.filter(app.registry, function (item) {
       const itemFilter = registryFilter;
 
@@ -111,20 +109,6 @@ export function Apps(optionHash) {
       // ideally all routes should use it, safe for backwards compatibility though
       // owner bypasses permissions (via the first Reaction.hasOwnerAccess() check)
       if (!Reaction.hasOwnerAccess() && item.audience && registryFilter.audience) {
-        /**
-         * sample Package.registry.audience
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         */
-
         let hasAccess;
 
         for (const permission of registryFilter.audience) {
@@ -155,7 +139,7 @@ export function Apps(optionHash) {
 
   // Sort apps by priority (registry.priority)
   const sortedApps = reactionApps.sort((a, b) => a.priority - b.priority).slice();
-  // console.log(JSON.stringify({ sortedApps }, null, 4));
+
   return sortedApps;
 }
 
